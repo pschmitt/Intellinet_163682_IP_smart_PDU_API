@@ -38,7 +38,7 @@ def get_outlet_states(pdu):
     outlets = {int(_id[-1]): name for (_id, name) in pdu.outlet_names()}
     output = {}
     for o_id, outlet in outlets.items():
-        output[outlet] = {"id": o_id, "state": states[o_id]}
+        output[outlet] = {"id": int(o_id), "state": states[o_id]}
     return output
 
 
@@ -61,7 +61,7 @@ def get_outlet_ids(pdu, outlets):
             for name, data in states.items():
                 if name == o:
                     outlet_ids.append(data.get("id"))
-    return outlet_ids
+    return sorted(set([int(x) for x in outlet_ids]))
 
 
 def main():
