@@ -8,3 +8,5 @@ config.py
 
 # images can not be included because of copyright issues
 images/*
+.envrc
+venv/
