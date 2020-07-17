@@ -6,6 +6,7 @@ import json
 import logging
 import os
 import re
+import sys
 import time
 from api import IPU
 
@@ -25,7 +26,9 @@ def parse_args():
         "-p", "--password", default=os.environ.get("PDU_PASSWORD")
     )
     parser.add_argument("-d", "--debug", action="store_true", default=False)
-    parser.add_argument("ACTION")
+    parser.add_argument(
+        "ACTION", help="Action to perform: on|off|states|status"
+    )
     parser.add_argument("OUTLETS", nargs="*")
     return parser.parse_args()
 
@@ -63,13 +66,17 @@ def get_outlet_ids(pdu, outlets):
 
 def main():
     args = parse_args()
+
     if args.debug:
         logging.basicConfig(level=logging.DEBUG)
         LOGGER.debug(f"ARGS: {args}")
+
     pdu = IPU(args.hostname, auth=(args.username, args.password))
+
     outlet_ids = get_outlet_ids(pdu, args.OUTLETS) if args.OUTLETS else None
     if args.debug:
         LOGGER.debug(f"Outlet IDS: {outlet_ids}")
+
     if args.ACTION in ["toggle", "t"]:
         LOGGER.debug(f"Toggling outlets {outlet_ids}")
         pdu.disable_outlets(outlet_ids)
@@ -83,10 +90,12 @@ def main():
         pdu.disable_outlets(outlet_ids)
     elif args.ACTION in ["states"]:
         output = get_outlet_states(pdu)
-        print(json.dumps(output))
-
+        print(json.dumps(output, indent=2))
     elif args.ACTION in ["status", "st", "s"]:
-        print(json.dumps(pdu.status()))
+        print(json.dumps(pdu.status(), indent=2))
+    else:
+        LOGGER.error(f"Unknwon action: {args.ACTION}")
+        sys.exit(2)
 
 
 if __name__ == "__main__":
