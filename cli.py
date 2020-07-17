@@ -94,7 +94,7 @@ def main():
     elif args.ACTION in ["status", "st", "s"]:
         print(json.dumps(pdu.status(), indent=2))
     else:
-        LOGGER.error(f"Unknwon action: {args.ACTION}")
+        print(f"Unknown action: {args.ACTION}", file=sys.stderr)
         sys.exit(2)
 
 
